@@ -1,23 +1,24 @@
 process.env.NODE_ENV = 'test';
 
-let app = require('../server');
 let chai = require('chai');
 let chaiHttp = require('chai-http');
+let server = require('../server');
 let should = chai.should();
 let expect = chai.expect;
 
 chai.use(chaiHttp);
 
-let token = 'null';
+let token =
+	'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlYTA0ZTE3ZjI4NjAyMjM0MDg0OGIwZiIsInVzZXJuYW1lIjoiam9zZXBoIiwiaWF0IjoxNTg3NTY2NzYyLCJleHAiOjE1ODc1Nzc1NjJ9.usr1fcFOQ6eys2enTbT1kM4Dj2V6fTYOV72bA_5387Q';
 
 describe('/GET login', () => {
 	it('should login with correct credentials', (done) => {
 		chai
-			.request(app)
+			.request(server)
 			.post('/user/login')
 			.send({
 				username: 'joseph',
-				password: '87654321'
+				password: '12345678'
 			})
 			.end((err, res) => {
 				res.should.have.status(200);
@@ -27,14 +28,14 @@ describe('/GET login', () => {
 	});
 	it('should not login with incorrect credentials', (done) => {
 		chai
-			.request(app)
+			.request(server)
 			.post('/user/login')
 			.send({
 				username: 'joshua',
 				password: '87654321'
 			})
 			.end((err, res) => {
-				res.should.have.status(400);
+				res.should.have.status(404);
 				done();
 			});
 	});
@@ -43,11 +44,11 @@ describe('/GET login', () => {
 describe('/PATCH jsonpatch', () => {
 	before((done) => {
 		chai
-			.request(app)
+			.request(server)
 			.post('/user/login')
 			.send({
 				username: 'joseph',
-				password: '87654321'
+				password: '12345678'
 			})
 			.end((err, res) => {
 				token = res.body.token;
@@ -57,7 +58,7 @@ describe('/PATCH jsonpatch', () => {
 
 	it('should apply the patch when sending correct document', (done) => {
 		chai
-			.request(app)
+			.request(server)
 			.patch('/user/jsonpatch')
 			.set('Authorization', token)
 			.send({
@@ -81,7 +82,7 @@ describe('/PATCH jsonpatch', () => {
 
 	it('should reject patch if document is not jsonpatch', (done) => {
 		chai
-			.request(app)
+			.request(server)
 			.patch('/user/jsonpatch')
 			.set('Authorization', token)
 			.send({
@@ -98,7 +99,7 @@ describe('/PATCH jsonpatch', () => {
 
 	it('should not apply patch if token is missing', (done) => {
 		chai
-			.request(app)
+			.request(server)
 			.patch('/user/jsonpatch')
 			.send({
 				json: {
@@ -123,11 +124,11 @@ describe('/PATCH jsonpatch', () => {
 describe('/POST thumbnail', () => {
 	before((done) => {
 		chai
-			.request(app)
+			.request(server)
 			.post('/user/login')
 			.send({
 				username: 'joseph',
-				password: '87654321'
+				password: '12345678'
 			})
 			.end((err, res) => {
 				token = res.body.token;
@@ -137,7 +138,7 @@ describe('/POST thumbnail', () => {
 
 	it('should create a thumbnail', (done) => {
 		chai
-			.request(app)
+			.request(server)
 			.post('/user/thumbnail')
 			.set('Authorization', token)
 			.send({
@@ -152,7 +153,7 @@ describe('/POST thumbnail', () => {
 
 	it('should not create thumbnail if url is invalid', (done) => {
 		chai
-			.request(app)
+			.request(server)
 			.post('/user/thumbnail')
 			.set('Authorization', token)
 			.send({
@@ -166,7 +167,7 @@ describe('/POST thumbnail', () => {
 
 	it('should not create a thumbnail if token is missing', (done) => {
 		chai
-			.request(app)
+			.request(server)
 			.post('/user/thumbnail')
 			.send({
 				url: 'https://www.pexels.com/'

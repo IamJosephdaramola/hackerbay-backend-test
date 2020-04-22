@@ -4,7 +4,7 @@
 	"description": "a simple stateless microservice in Nodejs, with three major functionalities - Authentication, JSON Patching, Image thumbnail generation",
 	"main": "server.js",
 	"scripts": {
-		"test": "nyc mocha --timeout 10000 --exit",
+		"test": "nyc mocha --timeout 50000 --exit",
 		"start": "nodemon server.js"
 	},
 	"author": "IamJosephDaramola",
